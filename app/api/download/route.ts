@@ -1,14 +1,37 @@
-import { createWriteStream } from "fs"
-import ytdl from "@distube/ytdl-core"
+import ytdl from "@distube/ytdl-core";
 
 export async function POST(request: Request) {
-    const data = await request.json()
-    const url = data.body.url
-    const info = await ytdl.getInfo(url)
-    info.formats.forEach((item) => console.log(item.itag, ": ", item.qualityLabel, " : ", item.hasAudio, " : ", item.hasVideo))
-    const format = ytdl.chooseFormat(info.formats, { quality: "18" })
-    const stream = ytdl(url, {format: format}).pipe(createWriteStream(`./Videos/${info.videoDetails.title}.${format.container}`))
-    console.log(data)
-    return Response.json({ msg: "Completed" })
-    
+  try {
+    const data = await request.json();
+    const url = data.body.url;
+
+    if (!ytdl.validateURL(url)) {
+      return Response.json({ msg: "Invalid YouTube URL" }, { status: 400 });
+    }
+
+    const info = await ytdl.getInfo(url);
+    const format = ytdl.chooseFormat(info.formats, { quality: "18" });
+    const videoStream = ytdl(url, { format: format });
+    const stream = new ReadableStream({
+      start(controller) {
+        videoStream.on("data", (chunk) => controller.enqueue(chunk));
+        videoStream.on("end", () => controller.close());
+        videoStream.on("error", (err) => controller.error(err));
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": `video/${format.container}`,
+        "Content-Disposition": "attachment",
+        "X-Video-Title": encodeURIComponent(info.videoDetails.title)
+      },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return Response.json(
+      { msg: "Error occurred" },
+      { status: 500 }
+    );
+  }
 }
