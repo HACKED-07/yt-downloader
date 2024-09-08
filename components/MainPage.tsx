@@ -1,9 +1,7 @@
 "use client"
 
 import axios from "axios";
-import download from "downloadjs"
 import { useState } from "react";
-import useDownloader from "react-use-downloader";
 
 export default function Home() {
   const [url, setUrl] = useState("");
