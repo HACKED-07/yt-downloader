@@ -9,16 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@distube/ytdl-core": "^4.14.4",
+    "axios": "^1.7.7",
+    "downloadjs": "^1.4.7",
+    "next": "14.2.8",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.8"
+    "react-use-downloader": "^1.2.8",
+    "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/downloadjs": "^1.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }
