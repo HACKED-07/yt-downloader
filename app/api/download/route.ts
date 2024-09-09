@@ -3,7 +3,7 @@ import ytdl from "@distube/ytdl-core";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const url = data.body.url;
+    const url = data.body.url; // Get the Video URL
 
     if (!ytdl.validateURL(url)) {
       return Response.json({ msg: "Invalid YouTube URL" }, { status: 400 });
